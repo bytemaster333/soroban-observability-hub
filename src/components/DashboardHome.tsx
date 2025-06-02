@@ -1,87 +1,92 @@
 
-import { TrendingUp, Terminal, AlertCircle, CheckCircle2, Clock, Activity } from 'lucide-react';
+import { TrendingUp, Terminal, AlertCircle, CheckCircle2, Clock, Activity, Layers, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const summaryData = [
-  { name: 'Mon', commands: 45, errors: 3 },
-  { name: 'Tue', commands: 52, errors: 1 },
-  { name: 'Wed', commands: 38, errors: 5 },
-  { name: 'Thu', commands: 61, errors: 2 },
-  { name: 'Fri', commands: 48, errors: 4 },
-  { name: 'Sat', commands: 29, errors: 1 },
-  { name: 'Sun', commands: 33, errors: 2 },
+  { name: 'Mon', transactions: 45, errors: 3, volume: 12.5 },
+  { name: 'Tue', transactions: 52, errors: 1, volume: 18.7 },
+  { name: 'Wed', transactions: 38, errors: 5, volume: 9.3 },
+  { name: 'Thu', transactions: 61, errors: 2, volume: 22.1 },
+  { name: 'Fri', transactions: 48, errors: 4, volume: 15.8 },
+  { name: 'Sat', transactions: 29, errors: 1, volume: 8.2 },
+  { name: 'Sun', transactions: 33, errors: 2, volume: 11.4 },
 ];
 
 const recentActivity = [
-  { time: '14:32', command: 'soroban contract deploy', status: 'success', duration: '2.3s' },
-  { time: '14:28', command: 'soroban rpc get-ledger', status: 'success', duration: '0.8s' },
-  { time: '14:25', command: 'soroban contract invoke', status: 'error', duration: '1.2s' },
-  { time: '14:20', command: 'soroban network add', status: 'success', duration: '0.5s' },
-  { time: '14:15', command: 'soroban contract build', status: 'success', duration: '15.7s' },
+  { time: '14:32', command: 'soroban contract deploy', status: 'success', duration: '2.3s', network: 'testnet' },
+  { time: '14:28', command: 'stellar account create', status: 'success', duration: '0.8s', network: 'testnet' },
+  { time: '14:25', command: 'soroban contract invoke', status: 'error', duration: '1.2s', network: 'testnet' },
+  { time: '14:20', command: 'stellar payment send', status: 'success', duration: '0.5s', network: 'testnet' },
+  { time: '14:15', command: 'soroban contract build', status: 'success', duration: '15.7s', network: 'local' },
 ];
 
 export const DashboardHome = () => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
-          Command Center
+      <div className="relative">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-violet-400 to-purple-300 bg-clip-text text-transparent">
+          Stellar Command Center
         </h1>
-        <p className="text-slate-400 mt-1">Real-time insights into your Stellar development workflow</p>
+        <p className="text-purple-300/80 mt-2 text-lg">Real-time insights into your Stellar blockchain development</p>
+        <div className="absolute -top-4 -left-4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Total Commands</CardTitle>
-            <Terminal className="h-4 w-4 text-blue-400" />
+        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+            <CardTitle className="text-sm font-medium text-purple-200">Transactions Today</CardTitle>
+            <Layers className="h-5 w-5 text-purple-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">1,247</div>
-            <p className="text-xs text-slate-400">
-              <span className="text-green-400">+12%</span> from last week
+          <CardContent className="relative z-10">
+            <div className="text-3xl font-bold text-white">1,247</div>
+            <p className="text-xs text-purple-300/80">
+              <span className="text-emerald-400">+12%</span> from yesterday
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Success Rate</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
+        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+            <CardTitle className="text-sm font-medium text-purple-200">Success Rate</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">94.2%</div>
-            <p className="text-xs text-slate-400">
-              <span className="text-green-400">+2.1%</span> from yesterday
+          <CardContent className="relative z-10">
+            <div className="text-3xl font-bold text-white">97.8%</div>
+            <p className="text-xs text-purple-300/80">
+              <span className="text-emerald-400">+2.1%</span> improvement
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Avg Response Time</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-400" />
+        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+            <CardTitle className="text-sm font-medium text-purple-200">Avg Confirmation</CardTitle>
+            <Clock className="h-5 w-5 text-yellow-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">1.8s</div>
-            <p className="text-xs text-slate-400">
-              <span className="text-red-400">+0.2s</span> from last hour
+          <CardContent className="relative z-10">
+            <div className="text-3xl font-bold text-white">4.2s</div>
+            <p className="text-xs text-purple-300/80">
+              <span className="text-red-400">+0.3s</span> network load
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Active Errors</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-400" />
+        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+            <CardTitle className="text-sm font-medium text-purple-200">Network Fees</CardTitle>
+            <Zap className="h-5 w-5 text-yellow-400" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">8</div>
-            <p className="text-xs text-slate-400">
-              <span className="text-green-400">-3</span> from last check
+          <CardContent className="relative z-10">
+            <div className="text-3xl font-bold text-white">0.01 XLM</div>
+            <p className="text-xs text-purple-300/80">
+              <span className="text-emerald-400">-5%</span> avg fee cost
             </p>
           </CardContent>
         </Card>
@@ -89,86 +94,91 @@ export const DashboardHome = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl">
           <CardHeader>
             <CardTitle className="text-white flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-blue-400" />
-              <span>Command Activity</span>
+              <TrendingUp className="w-5 h-5 text-purple-400" />
+              <span>Transaction Volume</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={summaryData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#6B46C1" opacity={0.2} />
+                <XAxis dataKey="name" stroke="#A855F7" />
+                <YAxis stroke="#A855F7" />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    border: '1px solid #374151',
-                    borderRadius: '8px',
-                    color: '#fff'
+                    backgroundColor: '#1E1B4B', 
+                    border: '1px solid #7C3AED',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
                   }} 
                 />
-                <Line type="monotone" dataKey="commands" stroke="#60A5FA" strokeWidth={2} />
+                <Line type="monotone" dataKey="transactions" stroke="#8B5CF6" strokeWidth={3} dot={{ fill: '#8B5CF6', r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl">
           <CardHeader>
             <CardTitle className="text-white flex items-center space-x-2">
               <AlertCircle className="w-5 h-5 text-red-400" />
-              <span>Error Trends</span>
+              <span>Error Analysis</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={summaryData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#6B46C1" opacity={0.2} />
+                <XAxis dataKey="name" stroke="#A855F7" />
+                <YAxis stroke="#A855F7" />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    border: '1px solid #374151',
-                    borderRadius: '8px',
-                    color: '#fff'
+                    backgroundColor: '#1E1B4B', 
+                    border: '1px solid #7C3AED',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
                   }} 
                 />
-                <Bar dataKey="errors" fill="#EF4444" />
+                <Bar dataKey="errors" fill="#EF4444" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Activity */}
-      <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+      {/* Live Activity Feed */}
+      <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl">
         <CardHeader>
           <CardTitle className="text-white flex items-center space-x-2">
-            <Activity className="w-5 h-5 text-teal-400" />
-            <span>Live Activity Feed</span>
+            <Activity className="w-5 h-5 text-emerald-400" />
+            <span>Live Stellar Activity</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    activity.status === 'success' ? 'bg-green-400' : 'bg-red-400'
+              <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 border border-purple-500/20 rounded-xl hover:border-purple-400/40 transition-colors">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-3 h-3 rounded-full ${
+                    activity.status === 'success' ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50' : 'bg-red-400 shadow-lg shadow-red-400/50'
                   }`} />
-                  <span className="text-sm text-slate-300">{activity.time}</span>
-                  <code className="text-sm bg-slate-600/50 px-2 py-1 rounded text-blue-300">
+                  <span className="text-sm text-purple-200 font-mono">{activity.time}</span>
+                  <code className="text-sm bg-slate-700/60 px-3 py-1 rounded-lg text-purple-300 border border-purple-500/30">
                     {activity.command}
                   </code>
+                  <span className="text-xs bg-slate-600/60 px-2 py-1 rounded text-slate-300 border border-slate-600">
+                    {activity.network}
+                  </span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-slate-400">{activity.duration}</span>
+                <div className="flex items-center space-x-3">
+                  <span className="text-xs text-purple-300/80 font-mono">{activity.duration}</span>
                   {activity.status === 'success' ? (
-                    <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   ) : (
                     <AlertCircle className="w-4 h-4 text-red-400" />
                   )}
