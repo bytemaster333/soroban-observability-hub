@@ -1,11 +1,60 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from 'react';
+import { Sidebar } from '@/components/Sidebar';
+import { TopNavbar } from '@/components/TopNavbar';
+import { DashboardHome } from '@/components/DashboardHome';
+import { CLICommandLogger } from '@/components/CLICommandLogger';
+import { RPCTracker } from '@/components/RPCTracker';
+import { TraceViewer } from '@/components/TraceViewer';
+import { DryRunSimulator } from '@/components/DryRunSimulator';
+import { PerformanceAnalyzer } from '@/components/PerformanceAnalyzer';
+import { ErrorIntelligence } from '@/components/ErrorIntelligence';
+
+export type ActiveModule = 'dashboard' | 'cli-logger' | 'rpc-tracker' | 'trace-viewer' | 'dry-run' | 'performance' | 'error-intelligence';
 
 const Index = () => {
+  const [activeModule, setActiveModule] = useState<ActiveModule>('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const renderActiveModule = () => {
+    switch (activeModule) {
+      case 'dashboard':
+        return <DashboardHome />;
+      case 'cli-logger':
+        return <CLICommandLogger />;
+      case 'rpc-tracker':
+        return <RPCTracker />;
+      case 'trace-viewer':
+        return <TraceViewer />;
+      case 'dry-run':
+        return <DryRunSimulator />;
+      case 'performance':
+        return <PerformanceAnalyzer />;
+      case 'error-intelligence':
+        return <ErrorIntelligence />;
+      default:
+        return <DashboardHome />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
+      <div className="flex w-full min-h-screen">
+        <Sidebar 
+          activeModule={activeModule} 
+          setActiveModule={setActiveModule}
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+        <div className="flex-1 flex flex-col">
+          <TopNavbar 
+            toggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+            sidebarCollapsed={sidebarCollapsed}
+          />
+          <main className="flex-1 p-6 overflow-auto">
+            {renderActiveModule()}
+          </main>
+        </div>
       </div>
     </div>
   );
