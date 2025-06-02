@@ -76,74 +76,73 @@ export const CLICommandLogger = () => {
 
   const getStatusIcon = (status: string) => {
     return status === 'success' ? 
-      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : 
-      <AlertCircle className="w-4 h-4 text-red-400" />;
+      <CheckCircle2 className="w-4 h-4 text-green-500" /> : 
+      <AlertCircle className="w-4 h-4 text-red-500" />;
   };
 
   const getStatusBadge = (status: string) => {
     return status === 'success' ? 
-      <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Success</Badge> :
-      <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Error</Badge>;
+      <Badge className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100">Success</Badge> :
+      <Badge className="bg-red-50 text-red-700 border-red-200 hover:bg-red-100">Error</Badge>;
   };
 
   const getNetworkBadge = (network: string) => {
     const colors = {
-      'testnet': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      'mainnet': 'bg-green-500/20 text-green-400 border-green-500/30',
-      'local': 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      'testnet': 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100',
+      'mainnet': 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+      'local': 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
     };
     return <Badge className={colors[network as keyof typeof colors] || colors.local}>{network}</Badge>;
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="relative">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Soroban CLI Logger
           </h1>
-          <p className="text-purple-300/80 mt-1">Monitor and analyze all Stellar CLI command executions</p>
-          <div className="absolute -top-2 -left-2 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+          <p className="text-slate-600 mt-2 text-lg">Monitor and analyze all Stellar CLI command executions</p>
         </div>
-        <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 shadow-lg shadow-purple-500/25">
+        <Button className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg">
           <Download className="w-4 h-4 mr-2" />
           Export Logs
         </Button>
       </div>
 
       {/* Filters */}
-      <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl">
+      <Card className="bg-white/70 backdrop-blur-sm border-slate-200/60 shadow-lg">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input 
                 placeholder="Search Stellar commands..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-slate-800/60 border-purple-500/30 text-white placeholder:text-purple-300/60 focus:border-purple-400"
+                className="pl-10 bg-white/80 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-400"
               />
             </div>
             <div className="flex gap-2">
               <Button 
                 variant={selectedStatus === 'all' ? 'default' : 'outline'}
                 onClick={() => setSelectedStatus('all')}
-                className="bg-slate-700/60 hover:bg-slate-600/60 text-white border-purple-500/30"
+                className={selectedStatus === 'all' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'hover:bg-slate-50'}
               >
                 All
               </Button>
               <Button 
                 variant={selectedStatus === 'success' ? 'default' : 'outline'}
                 onClick={() => setSelectedStatus('success')}
-                className="bg-slate-700/60 hover:bg-slate-600/60 text-white border-purple-500/30"
+                className={selectedStatus === 'success' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'hover:bg-slate-50'}
               >
                 Success
               </Button>
               <Button 
                 variant={selectedStatus === 'error' ? 'default' : 'outline'}
                 onClick={() => setSelectedStatus('error')}
-                className="bg-slate-700/60 hover:bg-slate-600/60 text-white border-purple-500/30"
+                className={selectedStatus === 'error' ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'hover:bg-slate-50'}
               >
                 Error
               </Button>
@@ -155,38 +154,38 @@ export const CLICommandLogger = () => {
       {/* Commands List */}
       <div className="space-y-4">
         {filteredCommands.map((cmd) => (
-          <Card key={cmd.id} className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl hover:border-purple-400/50 transition-all duration-300">
+          <Card key={cmd.id} className="bg-white/70 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="pt-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center space-x-3 flex-wrap gap-2">
                     {getStatusIcon(cmd.status)}
-                    <span className="text-sm text-purple-300/80 font-mono">{cmd.timestamp}</span>
+                    <span className="text-sm text-slate-500 font-mono">{cmd.timestamp}</span>
                     {getStatusBadge(cmd.status)}
                     {getNetworkBadge(cmd.network)}
-                    <Badge variant="outline" className="text-slate-300 border-slate-600">
+                    <Badge variant="outline" className="text-slate-600 border-slate-300">
                       {cmd.user}
                     </Badge>
-                    <Badge variant="outline" className="text-yellow-300 border-yellow-600/30">
+                    <Badge variant="outline" className="text-amber-600 border-amber-300">
                       <Layers className="w-3 h-3 mr-1" />
                       {cmd.gasUsed}
                     </Badge>
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <Terminal className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                    <code className="bg-slate-700/60 px-4 py-3 rounded-lg text-sm text-purple-300 font-mono break-all border border-purple-500/20">
+                    <Terminal className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                    <code className="bg-slate-100 px-4 py-3 rounded-xl text-sm text-slate-800 font-mono break-all border border-slate-200">
                       {cmd.command}
                     </code>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-300 bg-slate-800/60 px-3 py-2 rounded-lg border border-purple-500/20">
-                      <span className="font-medium text-purple-300">Result:</span> {cmd.result}
+                    <div className="text-sm text-slate-700 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                      <span className="font-semibold text-blue-600">Result:</span> {cmd.result}
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-purple-300/80">
+                    <div className="flex items-center space-x-2 text-sm text-slate-600">
                       <Clock className="w-4 h-4" />
-                      <span className="font-mono">{cmd.duration}</span>
+                      <span className="font-mono font-medium">{cmd.duration}</span>
                     </div>
                   </div>
                 </div>
@@ -197,11 +196,11 @@ export const CLICommandLogger = () => {
       </div>
 
       {filteredCommands.length === 0 && (
-        <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 backdrop-blur-xl">
+        <Card className="bg-white/70 backdrop-blur-sm border-slate-200/60 shadow-lg">
           <CardContent className="pt-6 text-center py-12">
-            <Terminal className="w-16 h-16 text-purple-600/60 mx-auto mb-4" />
-            <p className="text-purple-300/80 text-lg">No Stellar commands found</p>
-            <p className="text-purple-400/60 text-sm mt-1">Try adjusting your search criteria</p>
+            <Terminal className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+            <p className="text-slate-600 text-lg font-medium">No Stellar commands found</p>
+            <p className="text-slate-500 text-sm mt-1">Try adjusting your search criteria</p>
           </CardContent>
         </Card>
       )}
