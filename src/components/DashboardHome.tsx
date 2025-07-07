@@ -1,27 +1,68 @@
 
+import { useState, useEffect } from 'react';
 import { TrendingUp, Terminal, AlertCircle, CheckCircle2, Clock, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-
-const summaryData = [
-  { name: 'Mon', commands: 45, errors: 3 },
-  { name: 'Tue', commands: 52, errors: 1 },
-  { name: 'Wed', commands: 38, errors: 5 },
-  { name: 'Thu', commands: 61, errors: 2 },
-  { name: 'Fri', commands: 48, errors: 4 },
-  { name: 'Sat', commands: 29, errors: 1 },
-  { name: 'Sun', commands: 33, errors: 2 },
-];
-
-const recentActivity = [
-  { time: '14:32', command: 'soroban contract deploy', status: 'success', duration: '2.3s' },
-  { time: '14:28', command: 'soroban rpc get-ledger', status: 'success', duration: '0.8s' },
-  { time: '14:25', command: 'soroban contract invoke', status: 'error', duration: '1.2s' },
-  { time: '14:20', command: 'soroban network add', status: 'success', duration: '0.5s' },
-  { time: '14:15', command: 'soroban contract build', status: 'success', duration: '15.7s' },
-];
+import { apiService, AnalyticsSummary, CLILog, ContractEvent } from '@/services/api';
 
 export const DashboardHome = () => {
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
+  const [recentActivity, setRecentActivity] = useState<CLILog[]>([]);
+  const [liveEvents, setLiveEvents] = useState<ContractEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const [summaryData, cliLogs, events] = await Promise.all([
+        apiService.fetchAnalyticsSummary(),
+        apiService.fetchCLILogs(),
+        apiService.fetchLiveEvents()
+      ]);
+      
+      setSummary(summaryData);
+      // Get last 5 commands for recent activity
+      setRecentActivity(cliLogs.slice(-5));
+      setLiveEvents(events);
+      setLoading(false);
+    };
+
+    fetchData();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Mock chart data for now - you can replace this with real time-series data from your backend
+  const summaryData = [
+    { name: 'Mon', commands: 45, errors: 3 },
+    { name: 'Tue', commands: 52, errors: 1 },
+    { name: 'Wed', commands: 38, errors: 5 },
+    { name: 'Thu', commands: 61, errors: 2 },
+    { name: 'Fri', commands: 48, errors: 4 },
+    { name: 'Sat', commands: 29, errors: 1 },
+    { name: 'Sun', commands: 33, errors: 2 },
+  ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
+            Command Center
+          </h1>
+          <p className="text-slate-400 mt-1">Real-time insights into your Stellar development workflow</p>
+        </div>
+        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+          <CardContent className="pt-6 text-center py-12">
+            <div className="animate-spin w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-slate-400">Loading dashboard data...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -40,9 +81,11 @@ export const DashboardHome = () => {
             <Terminal className="h-4 w-4 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">1,247</div>
+            <div className="text-2xl font-bold text-white">
+              {summary?.total_commands?.toLocaleString() || '0'}
+            </div>
             <p className="text-xs text-slate-400">
-              <span className="text-green-400">+12%</span> from last week
+              {summary ? 'Live data' : 'No data yet'}
             </p>
           </CardContent>
         </Card>
@@ -53,9 +96,11 @@ export const DashboardHome = () => {
             <CheckCircle2 className="h-4 w-4 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">94.2%</div>
+            <div className="text-2xl font-bold text-white">
+              {summary ? `${summary.success_rate.toFixed(1)}%` : '0%'}
+            </div>
             <p className="text-xs text-slate-400">
-              <span className="text-green-400">+2.1%</span> from yesterday
+              Command success rate
             </p>
           </CardContent>
         </Card>
@@ -66,9 +111,11 @@ export const DashboardHome = () => {
             <Clock className="h-4 w-4 text-yellow-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">1.8s</div>
+            <div className="text-2xl font-bold text-white">
+              {summary ? `${(summary.avg_response_time / 1000).toFixed(1)}s` : '0s'}
+            </div>
             <p className="text-xs text-slate-400">
-              <span className="text-red-400">+0.2s</span> from last hour
+              Average execution time
             </p>
           </CardContent>
         </Card>
@@ -79,9 +126,11 @@ export const DashboardHome = () => {
             <AlertCircle className="h-4 w-4 text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">8</div>
+            <div className="text-2xl font-bold text-white">
+              {summary?.error_count || '0'}
+            </div>
             <p className="text-xs text-slate-400">
-              <span className="text-green-400">-3</span> from last check
+              Recent error count
             </p>
           </CardContent>
         </Card>
@@ -153,29 +202,41 @@ export const DashboardHome = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    activity.status === 'success' ? 'bg-green-400' : 'bg-red-400'
-                  }`} />
-                  <span className="text-sm text-slate-300">{activity.time}</span>
-                  <code className="text-sm bg-slate-600/50 px-2 py-1 rounded text-blue-300">
-                    {activity.command}
-                  </code>
+          {recentActivity.length > 0 ? (
+            <div className="space-y-3">
+              {recentActivity.map((activity, index) => (
+                <div key={activity.id || index} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.status === 'success' ? 'bg-green-400' : 'bg-red-400'
+                    }`} />
+                    <span className="text-sm text-slate-300">
+                      {new Date(activity.timestamp).toLocaleTimeString()}
+                    </span>
+                    <code className="text-sm bg-slate-600/50 px-2 py-1 rounded text-blue-300">
+                      {activity.command}
+                    </code>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-slate-400">
+                      {(activity.duration_ms / 1000).toFixed(1)}s
+                    </span>
+                    {activity.status === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-400" />
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-slate-400">{activity.duration}</span>
-                  {activity.status === 'success' ? (
-                    <CheckCircle2 className="w-4 h-4 text-green-400" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-red-400" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Activity className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+              <p className="text-slate-400">No recent activity to display</p>
+              <p className="text-sm text-slate-500 mt-1">Start running CLI commands to see live activity</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
